@@ -1,3 +1,4 @@
 export * from "./auth";
-export * from "./bookmarks";
+export * from "./index-assets";
+export * from "./content";
 export * from "./relations";

@@ -1,4 +1,4 @@
-import { defineEventHandler, H3Event, H3Error, setResponseStatus } from 'h3'
+import { defineEventHandler, H3Event, H3Error, setResponseStatus, createRouter as _createRouter } from 'h3'
 import { useApiError } from './response'
 import { BasicError } from './error'
 
@@ -6,8 +6,36 @@ import { BasicError } from './error'
 type ApiHandlerLogic = (event: H3Event) => Promise<any>;
 
 /**
+ * 封装的 createRouter
+ * 自动为所有未匹配的路由附加一个 404 处理，确保不会返回诡异的 204
+ */
+export function createApiRouter() {
+  const router = _createRouter();
+  
+  // 增加一个兜底的 hook 或 handler
+  // 覆盖 handler 方法，当内部 router 找不到匹配时抛出 404
+  const originalHandler = router.handler;
+  router.handler = defineEventHandler(async (event) => {
+    const result = await originalHandler(event);
+    
+    // h3 router 默认如果没有匹配项，会返回 undefined。
+    // 如果返回了 undefined 且响应没结束，说明没找到路由
+    if (result === undefined && !event.handled) {
+       throw new BasicError('RESOURCE_NOT_FOUND', { 
+         message: `API endpoint [${event.method}] ${event.path} not found`,
+         statusCode: 404 
+       });
+    }
+    return result;
+  });
+
+  return router;
+}
+
+/**
  * 创建一个包裹了统一错误处理的 H3 事件处理器。
  * @param handler 实际的 API 处理逻辑函数
+
  * @returns 一个新的 H3 事件处理器
  */
 export function defineApiHandler(handler: ApiHandlerLogic) {

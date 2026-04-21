@@ -25,13 +25,13 @@ export class BasicError extends Error {
       const fallbackDefinition = ERROR_DEFINITIONS.UNKNOWN_ERROR;
       super(fallbackDefinition.info);
       this.name = 'BasicError';
-      this.statusCode = 500;
+      this.statusCode = fallbackDefinition.status; // 使用 fallback 的 status
       this.errorCode = fallbackDefinition.code;
       this.errorInfo = fallbackDefinition.info;
     } else {
       const message = override?.message || definition.info;
-      // 默认 statusCode 为 200，除非在 override 中指定
-      const statusCode = override?.statusCode !== undefined ? override.statusCode : 200;
+      // 优先使用 override 的 statusCode，否则使用 definition 的 status，最后默认 500
+      const statusCode = override?.statusCode ?? definition.status ?? 500;
 
       super(message); // 设置 Error 的 message
       this.name = 'BasicError'; // 错误名称
@@ -39,6 +39,7 @@ export class BasicError extends Error {
       this.errorCode = definition.code; // 存储数字错误代码
       this.errorInfo = definition.info; // 存储默认描述信息
     }
+
 
     // 确保 instanceof 操作符能正确识别此类的实例
     Object.setPrototypeOf(this, BasicError.prototype);

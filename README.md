@@ -13,7 +13,10 @@ Detailed documentation is available in the `docs/` directory:
 
 - [Database & Schema Management](docs/database.md) - Drizzle, Schema Splitting, Migrations.
 - [AI Integration Architecture](docs/ai-integration.md) - Strategy Pattern, Factory, & Usage.
-- [Project Architecture](docs/architecture.md) - (Coming Soon) Overview of the tech stack.
+- [Error Handling Standards](docs/error-handling.md) - HTTP Status Codes & Business Error Codes.
+- [Project Architecture](docs/architecture.md) - Overview of the tech stack.
+- [Technical Research](docs/research.md) - Deduplication, idempotency, and implementation decisions.
+
 
 ## Quick Start
 

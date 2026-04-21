@@ -1,11 +1,14 @@
 import { relations } from "drizzle-orm";
 import { user, session, account } from "./auth";
-import { bookmarks } from "./bookmarks";
+import { indexAssets } from "./index-assets";
+import { contentUrls, contentNotes } from "./content";
 
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
-  bookmarks: many(bookmarks),
+  indexAssets: many(indexAssets),
+  contentUrls: many(contentUrls),
+  contentNotes: many(contentNotes),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -22,9 +25,23 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
-export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
+export const indexAssetsRelations = relations(indexAssets, ({ one }) => ({
   user: one(user, {
-    fields: [bookmarks.userId],
+    fields: [indexAssets.userId],
+    references: [user.id],
+  }),
+}));
+
+export const contentUrlsRelations = relations(contentUrls, ({ one }) => ({
+  user: one(user, {
+    fields: [contentUrls.userId],
+    references: [user.id],
+  }),
+}));
+
+export const contentNotesRelations = relations(contentNotes, ({ one }) => ({
+  user: one(user, {
+    fields: [contentNotes.userId],
     references: [user.id],
   }),
 }));
