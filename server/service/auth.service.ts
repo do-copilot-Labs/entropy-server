@@ -77,7 +77,7 @@ export const createAuthStart = (input: CreateAuthStartInput) => {
 
   const baseUrl = process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000";
   
-  const url = new URL("/login", baseUrl);
+  const url = new URL("/user/login", baseUrl);
   url.searchParams.set("source", "extension");
   url.searchParams.set("client_id", input.extId);
   url.searchParams.set("state", input.state);

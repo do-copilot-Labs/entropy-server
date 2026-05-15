@@ -14,7 +14,7 @@ onMounted(async () => {
     if (!sessionData?.session) {
       status.value = 'Not logged in, redirecting...';
       const qs = new URLSearchParams(route.query as Record<string, string>).toString();
-      return router.push(`/login?${qs}`);
+      return router.push(`/user/login?${qs}`);
     }
 
     const clientId = route.query.client_id as string;

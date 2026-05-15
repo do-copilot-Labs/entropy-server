@@ -21,7 +21,7 @@ const queryParams = computed(() => {
 
 const getRedirectUrl = () => {
   const isExtension = route.query.source === 'extension';
-  const targetPath = isExtension ? '/ext-auth/complete' : '/';
+  const targetPath = isExtension ? '/user/ext-auth/complete' : '/';
   const qs = queryParams.value;
   return qs ? `${targetPath}?${qs}` : targetPath;
 };
