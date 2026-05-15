@@ -12,6 +12,13 @@ export const ERROR_DEFINITIONS = {
   AUTH_EMAIL_REGISTERED:    { code: 1005, info: '邮箱已被注册', status: 409 },
   AUTH_TOKEN_GENERATION_FAILED: { code: 1006, info: '生成认证信息时出错', status: 500 },
   AUTH_USER_DATA_INCOMPLETE:{ code: 1007, info: '用户数据不完整，无法验证', status: 400 },
+  
+  // --- OAuth / 扩展授权 (1100-1199) ---
+  AUTH_CODE_INVALID:        { code: 1101, info: '授权码无效或已使用', status: 400 },
+  AUTH_CODE_EXPIRED:        { code: 1102, info: '授权码已过期', status: 400 },
+  PKCE_VERIFY_FAILED:       { code: 1103, info: 'PKCE 校验失败', status: 400 },
+  TOKEN_REVOKED:            { code: 1104, info: '令牌已被撤销', status: 401 },
+  EXT_ID_MISMATCH:          { code: 1105, info: '扩展ID不匹配', status: 403 },
 
   // --- 输入验证 (2000-2999) ---
   INPUT_REQUIRED:           { code: 2001, info: '缺少必要的输入参数', status: 400 },

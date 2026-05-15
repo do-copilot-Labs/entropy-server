@@ -8,7 +8,7 @@ import { H3Event, createError } from "h3";
  */
 export const useUser = (event: H3Event) => {
   const user = event.context.user;
-  const session = event.context.session;
+  const session = event.context.sessionLike ?? event.context.session;
   
   if (!user || !session) {
     throw createError({

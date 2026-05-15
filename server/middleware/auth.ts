@@ -1,7 +1,49 @@
-import { auth } from "../utils/auth";
+import { and, eq, gt } from "drizzle-orm";
+import { session, user } from "../database/schema";
 import { publicRoutes } from "../config/auth.config";
+import { db } from "../utils/db";
+import { auth } from "../utils/auth";
+import type { H3Event } from "h3";
 
-export default defineEventHandler(async (event) => {
+const getBearerToken = (event: H3Event) => {
+  const authorization = getHeader(event, "authorization");
+  if (!authorization?.startsWith("Bearer ")) return null;
+  const token = authorization.slice(7).trim();
+  return token || null;
+};
+
+const resolveBearerUser = async (event: H3Event) => {
+  const token = getBearerToken(event);
+  if (!token) return null;
+
+  const [record] = await db
+    .select({
+      user,
+      session: session,
+    })
+    .from(session)
+    .innerJoin(user, eq(session.userId, user.id))
+    .where(and(eq(session.token, token), gt(session.expiresAt, new Date())))
+    .limit(1);
+
+  if (!record) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Unauthorized",
+      data: {
+        code: "INVALID_BEARER_TOKEN",
+        message: "Bearer token is invalid or expired.",
+      },
+    });
+  }
+
+  return {
+    user: record.user,
+    sessionLike: record.session,
+  };
+};
+
+export default defineEventHandler(async (event: H3Event) => {
   const url = getRequestURL(event);
   const pathname = url.pathname;
 
@@ -19,28 +61,31 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // 3. 对非白名单路由进行鉴权
-    const session = await auth.api.getSession({
-      headers: event.headers,
-    });
-
-    if (!session) {
-      // console.warn(`[Auth] Unauthorized access attempt: ${pathname}`);
-      throw createError({
-        statusCode: 401,
-        statusMessage: "Unauthorized",
-        data: {
-          code: "UNAUTHORIZED",
-          message: "You must be logged in to access this resource."
-        }
+    const bearerAuth = await resolveBearerUser(event);
+    if (bearerAuth) {
+      event.context.user = bearerAuth.user;
+      event.context.session = bearerAuth.sessionLike;
+      event.context.sessionLike = bearerAuth.sessionLike;
+    } else {
+      const sessionResult = await auth.api.getSession({
+        headers: event.headers,
       });
+
+      if (!sessionResult) {
+        throw createError({
+          statusCode: 401,
+          statusMessage: "Unauthorized",
+          data: {
+            code: "UNAUTHORIZED",
+            message: "You must be logged in to access this resource."
+          }
+        });
+      }
+
+      event.context.user = sessionResult.user;
+      event.context.session = sessionResult.session;
+      event.context.sessionLike = sessionResult.session;
     }
-
-    // 4. 将用户信息注入上下文
-    event.context.user = session.user;
-    event.context.session = session.session;
-
-    // console.log(`[Auth] User ${session.user.email} accessed ${pathname}`);
 
   } catch (error: any) {
     // 如果是 401 错误，直接抛出

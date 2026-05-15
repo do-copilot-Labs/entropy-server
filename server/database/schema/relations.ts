@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import { user, session, account } from "./auth";
 import { indexAssets } from "./index-assets";
 import { contentUrls, contentNotes } from "./content";
+import { extAuthCodes, extRefreshTokens } from "./ext-auth";
 
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
@@ -9,6 +10,8 @@ export const userRelations = relations(user, ({ many }) => ({
   indexAssets: many(indexAssets),
   contentUrls: many(contentUrls),
   contentNotes: many(contentNotes),
+  extAuthCodes: many(extAuthCodes),
+  extRefreshTokens: many(extRefreshTokens),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -42,6 +45,20 @@ export const contentUrlsRelations = relations(contentUrls, ({ one }) => ({
 export const contentNotesRelations = relations(contentNotes, ({ one }) => ({
   user: one(user, {
     fields: [contentNotes.userId],
+    references: [user.id],
+  }),
+}));
+
+export const extAuthCodesRelations = relations(extAuthCodes, ({ one }) => ({
+  user: one(user, {
+    fields: [extAuthCodes.userId],
+    references: [user.id],
+  }),
+}));
+
+export const extRefreshTokensRelations = relations(extRefreshTokens, ({ one }) => ({
+  user: one(user, {
+    fields: [extRefreshTokens.userId],
     references: [user.id],
   }),
 }));

@@ -10,5 +10,6 @@ export const publicRoutes: string[] = [
   '/api/auth',         // Better Auth 所有路由 (让 Better Auth 自己处理)
   '/api/health',       // 健康检查
   '/api/public',       // 示例公共路由前缀
+  '/api/oauth2/token', // 扩展换票与刷新
   //'/api/urls',         // 测试中: 放行所有 /api/urls 开头的请求
 ];
