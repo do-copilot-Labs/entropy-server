@@ -30,6 +30,7 @@ onMounted(async () => {
     
     const response = await $fetch('/api/oauth2/authorize/complete', {
       method: 'POST',
+      credentials: 'include', // Ensure cookies are sent with the request
       body: {
         client_id: clientId,
         state: state,
