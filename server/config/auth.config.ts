@@ -11,5 +11,6 @@ export const publicRoutes: string[] = [
   '/api/health',       // 健康检查
   '/api/public',       // 示例公共路由前缀
   '/api/oauth2/token', // 扩展换票与刷新
+  '/api/oauth2/authorize', // 获取登录跳转地址，不需要登录态
   //'/api/urls',         // 测试中: 放行所有 /api/urls 开头的请求
 ];

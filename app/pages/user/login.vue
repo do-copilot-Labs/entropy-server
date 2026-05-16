@@ -21,9 +21,11 @@ const queryParams = computed(() => {
 
 const getRedirectUrl = () => {
   const isExtension = route.query.source === 'extension';
-  const targetPath = isExtension ? '/user/ext-auth/complete' : '/';
+  const targetPath = isExtension ? '/user/ext-auth/complete' : `/dashboard`;
   const qs = queryParams.value;
-  return qs ? `${targetPath}?${qs}` : targetPath;
+  // Use absolute URL for OAuth callback to prevent state_mismatch
+  const pathWithQs = qs ? `${targetPath}?${qs}` : targetPath;
+  return `${window.location.origin}${pathWithQs}`;
 };
 
 const loginWithGoogle = async () => {
@@ -43,6 +45,12 @@ const loginWithEmail = async () => {
   loading.value = true;
   errorMsg.value = '';
   try {
+    // For email login, we can still use relative path for client-side routing
+    const isExtension = route.query.source === 'extension';
+    const targetPath = isExtension ? '/user/ext-auth/complete' : '/';
+    const qs = queryParams.value;
+    const relativeRedirect = qs ? `${targetPath}?${qs}` : targetPath;
+
     const { error } = await authClient.signIn.email({
       email: email.value,
       password: password.value,
@@ -52,7 +60,7 @@ const loginWithEmail = async () => {
       errorMsg.value = error.message || 'Email login failed';
       loading.value = false;
     } else {
-      router.push(getRedirectUrl());
+      router.push(relativeRedirect);
     }
   } catch (err: any) {
     errorMsg.value = err.message || 'Login failed';

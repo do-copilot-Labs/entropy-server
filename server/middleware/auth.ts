@@ -56,7 +56,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const isPublic = publicRoutes.some((route) => pathname.startsWith(route));
 
   if (isPublic) {
-    // console.log(`[Auth] Public access: ${pathname}`); // 可选：记录公共访问
+    console.log(`[Auth] Public access: ${pathname}`); // 可选：记录公共访问
     return;
   }
 
